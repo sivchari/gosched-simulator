@@ -27,6 +27,7 @@ func main() {
 	mux.HandleFunc("/g", handler.G())
 	mux.HandleFunc("/m", handler.M())
 	mux.HandleFunc("/p", handler.P())
+	mux.HandleFunc("/sched", handler.Sched())
 
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -44,7 +45,7 @@ func main() {
 
 	slog.Info("shutting down server")
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(shutdownCtx); err != nil {
