@@ -16,6 +16,9 @@ func M() http.HandlerFunc {
 				Curg: &Goroutine{
 					Goid: m.Curg.GoID(),
 				},
+				G0: &Goroutine{
+					Goid: m.G0.GoID(),
+				},
 			}
 			machines = append(machines, machine)
 		}

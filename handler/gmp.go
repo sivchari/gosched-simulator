@@ -16,8 +16,9 @@ type Machine struct {
 }
 
 type Processor struct {
-	ID          int32
-	M           *Machine
-	Runq     []Goroutine
+	ID      int32
+	M       *Machine
+	Runq    []Goroutine
+	GFree   []Goroutine
 	Runnext *Goroutine
 }
