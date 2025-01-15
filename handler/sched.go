@@ -8,9 +8,9 @@ import (
 )
 
 type Scheduler struct {
-	Runq    []Goroutine
-	Stack   []Goroutine
-	NoStack []Goroutine
+	Runq    []Goroutine `json:"runq"`
+	Stack   []Goroutine `json:"stack"`
+	NoStack []Goroutine `json:"noStack"`
 }
 
 func Sched() http.HandlerFunc {

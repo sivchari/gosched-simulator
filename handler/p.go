@@ -4,12 +4,21 @@ import (
 	"encoding/json"
 	"net/http"
 	"runtime"
+	"time"
 )
 
 func P() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO: make goroutine by user action.
+		for range 500 {
+			go func() {
+				time.Sleep(30 * time.Second)
+			}()
+		}
+
 		ps := runtime.ForEachP()
 		processors := make([]*Processor, 0, len(ps))
+
 		for _, p := range ps {
 			processor := &Processor{
 				ID: p.ID,
@@ -21,22 +30,15 @@ func P() http.HandlerFunc {
 					Curg: &Goroutine{
 						Goid: m.Curg.GoID(),
 					},
-					G0: &Goroutine{
-						Goid: m.G0.GoID(),
-					},
 				}
 			}
-
 			runq := make([]Goroutine, 0, len(p.Runq))
-			for _, g := range p.Runq {
-				gp := g.Ptr()
-				if gp == nil {
-					continue
-				}
+			for _, gp := range p.XRunq {
 				runq = append(runq, Goroutine{
 					Goid:        gp.Goid,
 					Waitreason:  runtime.WaitReasonStrings[gp.Waitreason],
 					Annotations: gp.Annotations,
+					Status:      String(gp.Atomicstatus.Load()),
 				})
 			}
 
@@ -44,12 +46,13 @@ func P() http.HandlerFunc {
 			for range p.GFree.N {
 				gp := p.GFree.GList.Pop()
 				if gp == nil {
-					break
+					continue
 				}
 				gFree = append(gFree, Goroutine{
 					Goid:        gp.Goid,
 					Waitreason:  runtime.WaitReasonStrings[gp.Waitreason],
 					Annotations: gp.Annotations,
+					Status:      String(gp.Atomicstatus.Load()),
 				})
 			}
 			processor.GFree = gFree

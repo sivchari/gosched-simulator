@@ -309,6 +309,7 @@ type P struct {
 	Runqtail uint32
 	Runq     [256]guintptr
 	Runnext  guintptr
+	XRunq []G
 
 	GFree GFree
 

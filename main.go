@@ -23,15 +23,31 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer cancel()
 
+	cors := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/g", handler.G())
 	mux.HandleFunc("/m", handler.M())
 	mux.HandleFunc("/p", handler.P())
 	mux.HandleFunc("/sched", handler.Sched())
+	corsMux := cors(mux)
 
 	srv := &http.Server{
 		Addr:    ":8080",
-		Handler: mux,
+		Handler: corsMux,
 	}
 
 	go func() {

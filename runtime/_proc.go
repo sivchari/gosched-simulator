@@ -21,11 +21,18 @@ func ForEachM() []*M {
 }
 
 func ForEachP() []*P {
-	all := make([]*P, 0, gomaxprocs)
-	lock(&sched.lock)
-	defer unlock(&sched.lock)
+	var all []*P
+	lock(&allpLock)
+	defer unlock(&allpLock)
 	for _, p := range allp {
+		gs := make([]G, 0)
+		for !runqempty(p) {
+			gp, _ := runqget(p)
+			g := castg(gp)
+			gs = append(gs, *g)
+		}
 		pp := castp(p)
+		pp.XRunq = gs
 		all = append(all, pp)
 	}
 	return all
