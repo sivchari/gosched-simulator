@@ -36,12 +36,16 @@ const Home = () => {
 		data: ps,
 		error: psError,
 		isLoading: psLoading,
-	} = useSWR<P[]>("http://localhost:8080/p", fetcher);
+	} = useSWR<P[]>("http://localhost:8080/p", fetcher, {
+		refreshInterval: 3000,
+	});
 	const {
 		data: scheduler,
 		error: schedulerError,
 		isLoading: schedulerLoading,
-	} = useSWR<Scheduler>("http://localhost:8080/sched", fetcher);
+	} = useSWR<Scheduler>("http://localhost:8080/sched", fetcher, {
+		refreshInterval: 3000,
+	});
 
 	if (psLoading || schedulerLoading)
 		return <div className={"loading"}>Loading...</div>;
@@ -145,43 +149,43 @@ const Home = () => {
 					</Box>
 				</Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            margin: 2,
-          }}
-        >
-          <Typography variant="h6">No Stack</Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-            {scheduler.noStack?.map((g, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: 50,
-                  height: 50,
-                  borderRadius: "50%",
-                  backgroundColor: "lightcoral",
-                  margin: 1,
-                  cursor: "pointer",
-                }}
-                onClick={() =>
-                  handleClick(`G${g.goid} Details`, {
-                    waitreason: g.waitreason,
-                    annotations: g.annotations,
-                    status: g.status,
-                  })
-                }
-              >
-                <Typography>{g.goid}</Typography>
-              </Box>
-            ))}
-          </Box>
-          </Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						margin: 2,
+					}}
+				>
+					<Typography variant="h6">No Stack</Typography>
+					<Box sx={{ display: "flex", flexWrap: "wrap" }}>
+						{scheduler.noStack?.map((g, index) => (
+							<Box
+								key={index}
+								sx={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									width: 50,
+									height: 50,
+									borderRadius: "50%",
+									backgroundColor: "lightcoral",
+									margin: 1,
+									cursor: "pointer",
+								}}
+								onClick={() =>
+									handleClick(`G${g.goid} Details`, {
+										waitreason: g.waitreason,
+										annotations: g.annotations,
+										status: g.status,
+									})
+								}
+							>
+								<Typography>{g.goid}</Typography>
+							</Box>
+						))}
+					</Box>
+				</Box>
 			</Box>
 
 			{ps.map((p, index) => (
@@ -210,6 +214,15 @@ const Home = () => {
 						}
 					>
 						<Typography>M</Typography>
+					</Box>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Typography>Local Run Queue</Typography>
 					</Box>
 					<Box sx={{ display: "flex", flexWrap: "wrap", marginTop: 2 }}>
 						{p.runq.map((g, index) => (
