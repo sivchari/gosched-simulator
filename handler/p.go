@@ -10,9 +10,10 @@ import (
 func P() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// TODO: make goroutine by user action.
-		for range 500 {
+		runtime.GC()
+		for range 10 {
 			go func() {
-				time.Sleep(30 * time.Second)
+				time.Sleep(5 * time.Second)
 			}()
 		}
 

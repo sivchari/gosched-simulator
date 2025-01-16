@@ -4,7 +4,7 @@ export default function Document() {
 	return (
 		<Html lang="en">
 			<Head />
-      <title>gosched simulator</title>
+			<title>gosched simulator</title>
 			<body>
 				<Main />
 				<NextScript />
